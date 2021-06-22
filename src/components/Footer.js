@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   ButtonBase,
   GU,
   Link as AragonLink,
-  SidePanel,
   textStyle,
   useLayout,
   useTheme,
@@ -11,10 +10,9 @@ import {
 } from '@1hive/1hive-ui'
 import styled from 'styled-components'
 import Layout from './Layout'
+import MultiModal from '../components/MultiModal/MultiModal'
+import CreateProposalScreens from '../components/ModalFlows/CreateProposalScreens/CreateProposalScreens'
 import logoSvg from '../assets/logo.svg'
-import usePanelState from '../hooks/usePanelState'
-import useActions from '../hooks/useActions'
-import AddProposalPanel from './panels/AddProposalPanel'
 
 import { useWallet } from '../providers/Wallet'
 import { HONEYSWAP_TRADE_HONEY } from '../endpoints'
@@ -73,6 +71,9 @@ function Footer() {
               <Link href="https://twitter.com/1HiveOrg" external>
                 Twitter
               </Link>
+              <Link href="https://t.me/honeyswapdex" external>
+                Telegram
+              </Link>
               <Link href="https://forum.1hive.org/" external>
                 Forum
               </Link>
@@ -84,13 +85,19 @@ function Footer() {
                   margin-bottom: ${1.5 * GU}px;
                 `}
               >
-                Tools
+                Documentation
               </h5>
+              <Link href="https://1hive.gitbook.io/1hive/" external>
+                Wiki
+              </Link>
               <Link
-                href="https://www.notion.so/1Hive-Community-Handbook-f66d489df85a4011bac681963bfee796"
+                href="https://1hive.gitbook.io/1hive/community/security/bug-bounty"
                 external
               >
-                Handbook
+                Bug Bounty
+              </Link>
+              <Link href="https://1hive.gitbook.io/1hive/guides/faq" external>
+                FAQs
               </Link>
             </div>
           </div>
@@ -104,9 +111,11 @@ function FixedFooter() {
   const theme = useTheme()
   const { account } = useWallet()
   const { layoutName } = useLayout()
-  const panelState = usePanelState()
-  const actions = useActions(panelState.requestClose)
+  const [createProposalModalVisible, setCreateProposalModalVisible] = useState(
+    false
+  )
 
+  // TODO: Add the create proposal modal here
   return (
     <div>
       <div
@@ -143,7 +152,7 @@ function FixedFooter() {
               disabled={!account}
               icon={<img src={createSvg} alt="create" />}
               label="Create"
-              onClick={panelState.requestOpen}
+              onClick={() => setCreateProposalModalVisible(true)}
             />
             <FooterItem
               href={HONEYSWAP_TRADE_HONEY}
@@ -154,13 +163,12 @@ function FixedFooter() {
           </div>
         </div>
       </div>
-      <SidePanel
-        title="New proposal"
-        opened={panelState.visible}
-        onClose={panelState.requestClose}
+      <MultiModal
+        visible={createProposalModalVisible}
+        onClose={() => setCreateProposalModalVisible(false)}
       >
-        <AddProposalPanel onSubmit={actions.newProposal} />
-      </SidePanel>
+        <CreateProposalScreens />
+      </MultiModal>
     </div>
   )
 }
